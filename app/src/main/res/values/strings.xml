@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Chuck Norris</string>
+
+    <string name="label_title">Título</string>
+    <string name="label_message">Mensagem</string>
+    <string name="label_action">Ação</string>
+
+    <string name="btn_ok">OK</string>
+    <string name="btn_next">Próxima frase</string>
+
+    <string name="joke_screen_title">Chuck Norris Facts</string>
+
+    <string name="error_fail_title">Ops!</string>
+    <string name="error_load_joke">Falha ao carregar o texto.</string>
+    <string name="error_empty_list">Ops! Nenhum resultado encontrado\nMas o Chuck Norris encontra.</string>
+</resources>
