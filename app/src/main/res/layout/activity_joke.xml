@@ -94,6 +94,7 @@
         android:paddingTop="@dimen/spacing_16"
         android:paddingEnd="@dimen/spacing_16"
         android:paddingBottom="@dimen/spacing_72"
+        android:scrollbars="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

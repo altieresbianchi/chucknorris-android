@@ -1,6 +1,7 @@
 package br.com.chucknorris.repository.api
 
 import br.com.chucknorris.repository.model.Joke
+import br.com.chucknorris.repository.model.JokeResponse
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.Body
@@ -40,7 +41,7 @@ interface JokeApiClient {
     @GET("jokes/search")
     fun fetchJokesBySearchAsync(
         @QueryMap params: Map<String, String>
-    ): Deferred<Response<List<Joke>>>
+    ): Deferred<Response<JokeResponse>>
 
     /*@Headers("Accept: application/json", "Content-Type: application/json")
     @POST("login")

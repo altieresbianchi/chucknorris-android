@@ -2,6 +2,7 @@ package br.com.chucknorris.repository
 
 import br.com.chucknorris.repository.api.JokeApiClient
 import br.com.chucknorris.repository.model.Joke
+import br.com.chucknorris.repository.model.JokeResponse
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
 
@@ -22,7 +23,7 @@ class JokeRepository(
         return jokeApiClient.fetchCategoriesAsync()
     }
 
-    fun fetchJokesBySearchAsync(searchText: String): Deferred<Response<List<Joke>>> {
+    fun fetchJokesBySearchAsync(searchText: String): Deferred<Response<JokeResponse>> {
         val params = HashMap<String, String>()
         params["query"] = searchText
 

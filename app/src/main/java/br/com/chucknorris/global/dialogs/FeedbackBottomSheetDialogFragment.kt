@@ -60,8 +60,8 @@ class FeedbackBottomSheetDialogFragment private constructor() : BottomSheetDialo
         return dialogFeedbackBinding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         arguments?.let { args ->
             val statusIconResourceId = args.getInt(ARG_STATUS_ICON_RESOURCE_ID)

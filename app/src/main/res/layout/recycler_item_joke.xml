@@ -20,7 +20,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/imageViewProduct"
+                android:id="@+id/imageViewIcon"
                 android:layout_width="@dimen/icon_48"
                 android:layout_height="@dimen/icon_48"
                 android:layout_marginEnd="@dimen/font_16"
@@ -28,10 +28,10 @@
                 android:src="@drawable/ic_warning" />
 
             <TextView
-                android:id="@+id/textViewName"
+                android:id="@+id/textViewJoke"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/imageViewProduct"
+                android:layout_toEndOf="@+id/imageViewIcon"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="@dimen/font_18"
                 tools:text="Nome" />

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".feature.joke.view.activity.JokeListActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayoutSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/efefef"
+        android:padding="@dimen/spacing_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.mancj.materialsearchbar.MaterialSearchBar
+            android:id="@+id/searchBar"
+            style="@style/MaterialSearchBarLight"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_54"
+            app:mt_hint="@string/label_research"
+            app:mt_maxSuggestionsCount="0"
+            app:mt_speechMode="false" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/textViewInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/spacing_32"
+        android:text="@string/joke_list_info"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="@dimen/font_18"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayoutSearch" />
+
+    <TextView
+        android:id="@+id/textViewSearchText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/spacing_16"
+        android:paddingTop="@dimen/spacing_8"
+        android:paddingEnd="@dimen/spacing_16"
+        android:paddingBottom="@dimen/spacing_8"
+        android:text="@string/joke_list_search_result"
+        android:textColor="@color/colorPrimaryText"
+        android:textSize="@dimen/font_18"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayoutSearch"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewJokes"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:padding="@dimen/spacing_16"
+        android:scrollbars="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSearchText"
+        tools:listitem="@layout/recycler_item_joke"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/linearLayoutEmptyList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_32"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/imageViewIcon"
+            android:layout_width="@dimen/icon_48"
+            android:layout_height="@dimen/icon_48"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_warning" />
+
+        <TextView
+            android:id="@+id/textViewMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_16"
+            android:gravity="center"
+            android:text="@string/error_empty_list"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="@dimen/font_18" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

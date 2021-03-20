@@ -1,14 +1,21 @@
 package br.com.chucknorris.feature.joke.view.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.chucknorris.R
 import br.com.chucknorris.databinding.ActivityJokeBinding
 import br.com.chucknorris.feature.BaseActivity
+import br.com.chucknorris.feature.joke.view.adapter.JokeAdapter
 import br.com.chucknorris.feature.joke.viewmodel.JokeViewModel
 import br.com.chucknorris.global.command.GenericCommand
 import br.com.chucknorris.global.dialogs.FeedbackBottomSheetDialogFragment
@@ -49,6 +56,12 @@ class JokeActivity : BaseActivity() {
     private fun prepareUi() {
         try {
             supportActionBar?.title = getString(R.string.joke_screen_title)
+
+            activityJokeBinding.recyclerViewJokes.apply {
+                setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(this@JokeActivity)
+                adapter = JokeAdapter(emptyList())
+            }
 
         } catch (e: Exception) {
             Timber.e(e)
@@ -105,8 +118,7 @@ class JokeActivity : BaseActivity() {
                 loadJokeCard(command.joke)
             }
             is JokeViewModel.Command.ShowJokeList -> {
-                command.jokeList
-                // TODO Criar tela
+                this.loadRecyclerView(command.jokeList)
             }
             is JokeViewModel.Command.ShowEmptyList -> {
                 showEmptyList()
@@ -133,6 +145,47 @@ class JokeActivity : BaseActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.actions_joke, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_joke_list -> {
+                startActivity(Intent(this, JokeListActivity::class.java))
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun configSearchView(menuItem: MenuItem?) {
+        try {
+            val searchView = menuItem?.actionView as SearchView
+            searchView.setOnQueryTextListener(object :
+                SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(text: String): Boolean {
+                    viewModel.fetchJokesBySearch(text)
+
+                    searchView.clearFocus()
+                    return true
+                }
+
+                override fun onQueryTextChange(s: String): Boolean {
+                    activityJokeBinding.recyclerViewJokes.visibility = View.GONE
+                    return true
+                }
+            })
+            searchView.setOnCloseListener {
+                activityJokeBinding.recyclerViewJokes.visibility = View.VISIBLE
+                return@setOnCloseListener false
+            }
+
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
     private fun showErrorDialogFragment(message: String) {
         FeedbackBottomSheetDialogFragment.newInstance(
             R.drawable.ic_error,
@@ -147,7 +200,6 @@ class JokeActivity : BaseActivity() {
             linearLayoutCategories.removeAllViews()
 
             for (category in categoryList) {
-                Timber.d("==> Categoria: $category")
                 val buttonView =
                     LayoutInflater.from(this@JokeActivity).inflate(R.layout.button_category, null)
                 val buttonCategory: MaterialButton = buttonView.findViewById(R.id.buttonCategory)
@@ -185,10 +237,29 @@ class JokeActivity : BaseActivity() {
         }
     }
 
-    private fun loadJokeCard(joke: Joke) {
+    private fun showCardResult() {
         activityJokeBinding.apply {
+            horizontalScrollViewCategories.visibility - View.VISIBLE
+            cardViewJoke.visibility - View.VISIBLE
             imageViewIcon.visibility = View.VISIBLE
             textViewJoke.visibility = View.VISIBLE
+            recyclerViewJokes.visibility = View.VISIBLE
+            fabNextJoke.visibility = View.VISIBLE
+        }
+    }
+
+    private fun hideCardResult() {
+        activityJokeBinding.apply {
+            horizontalScrollViewCategories.visibility - View.GONE
+            cardViewJoke.visibility = View.GONE
+            fabNextJoke.visibility = View.GONE
+            recyclerViewJokes.visibility = View.VISIBLE
+        }
+    }
+
+    private fun loadJokeCard(joke: Joke) {
+        activityJokeBinding.apply {
+            showCardResult()
 
             Picasso.get()
                 .load(joke.iconUrl)
@@ -207,10 +278,21 @@ class JokeActivity : BaseActivity() {
         }
     }
 
+    private fun loadRecyclerView(list: List<Joke>) {
+        activityJokeBinding.apply {
+            hideCardResult()
+
+            val adapter = recyclerViewJokes.adapter as JokeAdapter
+            adapter.updateList(list)
+        }
+    }
+
     private fun showEmptyList() {
         activityJokeBinding.apply {
             imageViewIcon.visibility = View.VISIBLE
             textViewJoke.visibility = View.VISIBLE
+            textViewCategory.visibility = View.GONE
+            fabNextJoke.visibility = View.GONE
 
             imageViewIcon.setImageResource(R.drawable.ic_warning)
             textViewJoke.text = getString(R.string.error_empty_list)
