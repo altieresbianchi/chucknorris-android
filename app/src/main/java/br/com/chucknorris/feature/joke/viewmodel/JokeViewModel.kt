@@ -28,11 +28,9 @@ class JokeViewModel(
     )
 
     sealed class Command : GenericCommand() {
-        object ShowEmptyList : Command()
         object ShowGenericErrorMessage : Command()
         data class ShowJokeCard(val joke: Joke) : Command()
         data class ShowCategoryList(val categoryList: List<String>) : Command()
-        data class ShowJokeList(val jokeList: List<Joke>) : Command()
     }
 
     init {
@@ -72,37 +70,6 @@ class JokeViewModel(
                     response.body()?.let { joke ->
                         command.postValue(Command.ShowJokeCard(joke))
                     }
-                } else {
-                    command.postValue(Command.ShowGenericErrorMessage)
-                }
-
-            } catch (t: Throwable) {
-                Timber.e(t)
-                command.postValue(Command.ShowGenericErrorMessage)
-                viewState.postValue(currentViewState().copy(isFetchingJoke = false))
-            }
-        }
-    }
-
-    fun fetchJokesBySearch(searchText: String) {
-        coroutineScope.launch(coroutineContext) {
-            viewState.postValue(currentViewState().copy(isFetchingJoke = true))
-            try {
-                val response = jokeRepository.fetchJokesBySearchAsync(searchText).await()
-                viewState.postValue(currentViewState().copy(isFetchingJoke = false))
-
-                if (response.isSuccessful) {
-                    var jokeList = emptyList<Joke>()
-
-                    response.body()?.let { jokeResponse ->
-                        jokeList = jokeResponse.result
-                    }
-
-                    if (jokeList.isNotEmpty())
-                        command.postValue(Command.ShowJokeList(jokeList))
-                    else
-                        command.postValue(Command.ShowEmptyList)
-
                 } else {
                     command.postValue(Command.ShowGenericErrorMessage)
                 }

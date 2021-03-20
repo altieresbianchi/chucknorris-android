@@ -6,16 +6,11 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import br.com.chucknorris.R
 import br.com.chucknorris.databinding.ActivityJokeBinding
 import br.com.chucknorris.feature.BaseActivity
-import br.com.chucknorris.feature.joke.view.adapter.JokeAdapter
 import br.com.chucknorris.feature.joke.viewmodel.JokeViewModel
 import br.com.chucknorris.global.command.GenericCommand
 import br.com.chucknorris.global.dialogs.FeedbackBottomSheetDialogFragment
@@ -57,12 +52,6 @@ class JokeActivity : BaseActivity() {
         try {
             supportActionBar?.title = getString(R.string.joke_screen_title)
 
-            activityJokeBinding.recyclerViewJokes.apply {
-                setHasFixedSize(true)
-                layoutManager = LinearLayoutManager(this@JokeActivity)
-                adapter = JokeAdapter(emptyList())
-            }
-
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -73,16 +62,6 @@ class JokeActivity : BaseActivity() {
             fabNextJoke.setOnClickListener {
                 viewModel.getRandomJoke(selectedCategory)
             }
-            recyclerViewJokes.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    if (dy > 0 && fabNextJoke.isExtended()) {
-                        fabNextJoke.shrink()
-                    } else if (dy < 0 && !fabNextJoke.isExtended()) {
-                        fabNextJoke.extend()
-                    }
-                }
-            })
         }
     }
 
@@ -117,12 +96,6 @@ class JokeActivity : BaseActivity() {
             is JokeViewModel.Command.ShowJokeCard -> {
                 loadJokeCard(command.joke)
             }
-            is JokeViewModel.Command.ShowJokeList -> {
-                this.loadRecyclerView(command.jokeList)
-            }
-            is JokeViewModel.Command.ShowEmptyList -> {
-                showEmptyList()
-            }
         }
     }
 
@@ -135,7 +108,7 @@ class JokeActivity : BaseActivity() {
     }
 
     private fun render(viewState: JokeViewModel.ViewState) {
-        when (viewState.isFetchingJoke || viewState.isFetchingJoke) {
+        when (viewState.isFetchingCategories || viewState.isFetchingJoke) {
             true -> {
                 super.showLoading()
             }
@@ -157,33 +130,6 @@ class JokeActivity : BaseActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun configSearchView(menuItem: MenuItem?) {
-        try {
-            val searchView = menuItem?.actionView as SearchView
-            searchView.setOnQueryTextListener(object :
-                SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(text: String): Boolean {
-                    viewModel.fetchJokesBySearch(text)
-
-                    searchView.clearFocus()
-                    return true
-                }
-
-                override fun onQueryTextChange(s: String): Boolean {
-                    activityJokeBinding.recyclerViewJokes.visibility = View.GONE
-                    return true
-                }
-            })
-            searchView.setOnCloseListener {
-                activityJokeBinding.recyclerViewJokes.visibility = View.VISIBLE
-                return@setOnCloseListener false
-            }
-
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
     }
 
     private fun showErrorDialogFragment(message: String) {
@@ -237,30 +183,8 @@ class JokeActivity : BaseActivity() {
         }
     }
 
-    private fun showCardResult() {
-        activityJokeBinding.apply {
-            horizontalScrollViewCategories.visibility - View.VISIBLE
-            cardViewJoke.visibility - View.VISIBLE
-            imageViewIcon.visibility = View.VISIBLE
-            textViewJoke.visibility = View.VISIBLE
-            recyclerViewJokes.visibility = View.VISIBLE
-            fabNextJoke.visibility = View.VISIBLE
-        }
-    }
-
-    private fun hideCardResult() {
-        activityJokeBinding.apply {
-            horizontalScrollViewCategories.visibility - View.GONE
-            cardViewJoke.visibility = View.GONE
-            fabNextJoke.visibility = View.GONE
-            recyclerViewJokes.visibility = View.VISIBLE
-        }
-    }
-
     private fun loadJokeCard(joke: Joke) {
         activityJokeBinding.apply {
-            showCardResult()
-
             Picasso.get()
                 .load(joke.iconUrl)
                 .error(R.drawable.ic_error)
@@ -275,27 +199,6 @@ class JokeActivity : BaseActivity() {
                 textViewCategory.text = selectedCategory?.toUpperCase(Locale.ROOT)
                 textViewCategory.visibility = View.VISIBLE
             }
-        }
-    }
-
-    private fun loadRecyclerView(list: List<Joke>) {
-        activityJokeBinding.apply {
-            hideCardResult()
-
-            val adapter = recyclerViewJokes.adapter as JokeAdapter
-            adapter.updateList(list)
-        }
-    }
-
-    private fun showEmptyList() {
-        activityJokeBinding.apply {
-            imageViewIcon.visibility = View.VISIBLE
-            textViewJoke.visibility = View.VISIBLE
-            textViewCategory.visibility = View.GONE
-            fabNextJoke.visibility = View.GONE
-
-            imageViewIcon.setImageResource(R.drawable.ic_warning)
-            textViewJoke.text = getString(R.string.error_empty_list)
         }
     }
 }
