@@ -40,11 +40,6 @@ class JokeActivity : BaseActivity() {
         this.prepareViewModel()
 
         viewModel.fetchCategories()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
         viewModel.getRandomJoke(selectedCategory)
     }
 
