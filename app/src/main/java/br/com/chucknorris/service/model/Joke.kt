@@ -1,4 +1,4 @@
-package br.com.chucknorris.repository.model
+package br.com.chucknorris.service.model
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable

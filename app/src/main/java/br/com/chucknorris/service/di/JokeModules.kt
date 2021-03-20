@@ -1,15 +1,16 @@
-package br.com.chucknorris.repository.di
+package br.com.chucknorris.service.di
 
 import br.com.chucknorris.BuildConfig
-import br.com.chucknorris.repository.JokeRepository
-import br.com.chucknorris.repository.api.JokeApiClient
-import br.com.chucknorris.repository.api.RestClient
+import br.com.chucknorris.service.repository.JokeApiRepository
+import br.com.chucknorris.service.api.JokeApiClient
+import br.com.chucknorris.service.api.RestClient
+import br.com.chucknorris.service.contract.JokeRepository
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
 val jokeRepositoryModule: Module = module {
-    factory {
-        JokeRepository(jokeApiClient = get())
+    factory<JokeRepository> {
+        JokeApiRepository(jokeApiClient = get())
     }
 
     single {

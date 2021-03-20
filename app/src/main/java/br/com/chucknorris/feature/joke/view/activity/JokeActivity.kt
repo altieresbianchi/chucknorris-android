@@ -14,7 +14,7 @@ import br.com.chucknorris.feature.BaseActivity
 import br.com.chucknorris.feature.joke.viewmodel.JokeViewModel
 import br.com.chucknorris.global.command.GenericCommand
 import br.com.chucknorris.global.dialogs.FeedbackBottomSheetDialogFragment
-import br.com.chucknorris.repository.model.Joke
+import br.com.chucknorris.service.model.Joke
 import com.google.android.material.button.MaterialButton
 import com.squareup.picasso.Picasso
 import org.koin.androidx.viewmodel.ext.android.viewModel

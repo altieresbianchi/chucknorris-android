@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import br.com.chucknorris.R
-import br.com.chucknorris.repository.model.Joke
+import br.com.chucknorris.service.model.Joke
 import com.squareup.picasso.Picasso
 
 class JokeAdapter(

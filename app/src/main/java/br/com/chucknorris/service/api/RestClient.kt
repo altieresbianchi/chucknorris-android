@@ -1,4 +1,4 @@
-package br.com.chucknorris.repository.api
+package br.com.chucknorris.service.api
 
 import android.content.Context
 import br.com.chucknorris.BuildConfig

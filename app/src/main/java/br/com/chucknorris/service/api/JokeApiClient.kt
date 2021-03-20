@@ -1,14 +1,11 @@
-package br.com.chucknorris.repository.api
+package br.com.chucknorris.service.api
 
-import br.com.chucknorris.repository.model.Joke
-import br.com.chucknorris.repository.model.JokeResponse
+import br.com.chucknorris.service.model.Joke
+import br.com.chucknorris.service.model.JokeResponse
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
-import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Query
 import retrofit2.http.QueryMap
-import java.util.*
 
 interface JokeApiClient {
 

@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import br.com.chucknorris.global.command.CommandProvider
 import br.com.chucknorris.global.command.GenericCommand
-import br.com.chucknorris.repository.JokeRepository
-import br.com.chucknorris.repository.model.Joke
+import br.com.chucknorris.service.contract.JokeRepository
+import br.com.chucknorris.service.model.Joke
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber

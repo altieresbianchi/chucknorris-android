@@ -3,7 +3,7 @@ package br.com.chucknorris.feature
 import android.app.Application
 import br.com.chucknorris.di.commandInjectorModule
 import br.com.chucknorris.di.coroutineModule
-import br.com.chucknorris.repository.di.jokeRepositoryModule
+import br.com.chucknorris.service.di.jokeRepositoryModule
 import br.com.phaneronsoft.stockcontrol.feature.product.di.jokeListViewModelModule
 import br.com.phaneronsoft.stockcontrol.feature.product.di.jokeViewModelModule
 import org.koin.android.ext.koin.androidContext
