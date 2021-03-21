@@ -6,6 +6,7 @@ import br.com.chucknorris.global.command.CommandProvider
 import br.com.chucknorris.global.command.GenericCommand
 import br.com.chucknorris.global.events.SingleLiveEvent
 import br.com.chucknorris.service.contract.JokeRepository
+import br.com.chucknorris.service.model.Joke
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.nhaarman.mockitokotlin2.*
@@ -202,100 +203,76 @@ class JokeViewModelTest {
             )
     }
 
-    /*@Test
-    fun `Fetch category list, when fetching categories from repository fails, then show fetch error message`() {
-
-        // ARRANGE
-        val errorCode = 500
-        val errorMessage = "custom message"
-
-        val expectedJsonError = JsonObject().apply {
-            addProperty("status", "")
-            addProperty("message", errorMessage)
-        }
-
-        val expectedResponse = Response.error<List<String>>(
-            errorCode,
-            Gson().toJson(expectedJsonError).toResponseBody()
-        )
-        whenever(jokeRepositoryMock.fetchCategoriesAsync())
-            .thenReturn(CompletableDeferred(expectedResponse))
-
-        // ACT
-        viewModel.fetchCategories()
-
-        // ASSERT
-        verify(commandMock)
-            .postValue(
-                JokeViewModel.Command.ShowGenericErrorMessage
-            )
-    }*/
-
-    /*
     @Test
-    fun `Fetch fact list by text search, when fetching facts from repository happens successfully, then update fact list`() {
+    fun `Fetch random fact with without category, when fetching fact from repository happens successfully, then update fact data`() {
 
         // ARRANGE
-        val expectedJokeResponse = JokeResponse(
-            2,
-            listOf(
-                Joke(
-                    "a1a1a1",
-                    "Chuck Norris Fact 1",
-                    "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
-                ),
-                Joke(
-                    "b2b2b2",
-                    "Chuck Norris Fact 2",
-                    "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
-                ),
-            )
+        val expectedJoke = Joke(
+            "a1a1a1",
+            "Chuck Norris Fact 1",
+            "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
         )
-        val textToSearch = "text"
+        val category = null
 
-        val expectedResponse = Response.success(expectedJokeResponse)
+        val expectedResponse = Response.success(expectedJoke)
 
-        whenever(jokeRepositoryMock.fetchJokesBySearchAsync(textToSearch))
+        whenever(jokeRepositoryMock.getRandomJokeAsync(category))
             .thenReturn(CompletableDeferred(expectedResponse))
 
         // ACT
-        viewModel.fetchJokesBySearch(textToSearch)
+        viewModel.getRandomJoke(category)
 
         // ASSERT
         verify(commandMock)
             .postValue(
-                JokeViewModel.Command.ShowJokeList(expectedJokeResponse.result)
+                JokeViewModel.Command.ShowJokeCard(expectedJoke)
             )
     }
 
     @Test
-    fun `Fetch fact list by text search, when fetching facts from repository happens successfully, then show loading animation before displaying facts`() {
+    fun `Fetch random fact by filtering by category, when fetching fact from repository happens successfully, then update fact data`() {
 
         // ARRANGE
-        val expectedJokeResponse = JokeResponse(
-            2,
-            listOf(
-                Joke(
-                    "a1a1a1",
-                    "Chuck Norris Fact 1",
-                    "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
-                ),
-                Joke(
-                    "b2b2b2",
-                    "Chuck Norris Fact 2",
-                    "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
-                ),
-            )
+        val expectedJoke = Joke(
+            "a1a1a1",
+            "Chuck Norris Fact 1",
+            "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
         )
-        val textToSearch = "text"
+        val category = "animal"
 
-        val expectedResponse = Response.success(expectedJokeResponse)
+        val expectedResponse = Response.success(expectedJoke)
 
-        whenever(jokeRepositoryMock.fetchJokesBySearchAsync(textToSearch))
+        whenever(jokeRepositoryMock.getRandomJokeAsync(category))
             .thenReturn(CompletableDeferred(expectedResponse))
 
         // ACT
-        viewModel.fetchJokesBySearch(textToSearch)
+        viewModel.getRandomJoke(category)
+
+        // ASSERT
+        verify(commandMock)
+            .postValue(
+                JokeViewModel.Command.ShowJokeCard(expectedJoke)
+            )
+    }
+
+    @Test
+    fun `Fetch random fact, when fetching fact from repository happens successfully, then show loading animation before displaying fact`() {
+
+        // ARRANGE
+        val expectedJoke = Joke(
+            "a1a1a1",
+            "Chuck Norris Fact 1",
+            "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
+        )
+        val category = null
+
+        val expectedResponse = Response.success(expectedJoke)
+
+        whenever(jokeRepositoryMock.getRandomJokeAsync(category))
+            .thenReturn(CompletableDeferred(expectedResponse))
+
+        // ACT
+        viewModel.getRandomJoke(category)
 
         // ASSERT
         inOrder(commandMock, viewStateObserverMock) {
@@ -306,39 +283,29 @@ class JokeViewModelTest {
 
             verify(commandMock)
                 .postValue(
-                    JokeViewModel.Command.ShowJokeList(expectedJokeResponse.result)
+                    JokeViewModel.Command.ShowJokeCard(expectedJoke)
                 )
         }
     }
 
     @Test
-    fun `Fetch fact list by text search, when fetching facts from repository happens successfully, then hide loading animation after displaying facts`() {
+    fun `Fetch random fact, when fetching fact from repository happens successfully, then hide loading animation after displaying fact`() {
 
         // ARRANGE
-        val expectedJokeResponse = JokeResponse(
-            2,
-            listOf(
-                Joke(
-                    "a1a1a1",
-                    "Chuck Norris Fact 1",
-                    "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
-                ),
-                Joke(
-                    "b2b2b2",
-                    "Chuck Norris Fact 2",
-                    "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
-                ),
-            )
+        val expectedJoke = Joke(
+            "a1a1a1",
+            "Chuck Norris Fact 1",
+            "https://assets.chucknorris.host/img/avatar/chuck-norris.png"
         )
-        val textToSearch = "text"
+        val category = null
 
-        val expectedResponse = Response.success(expectedJokeResponse)
+        val expectedResponse = Response.success(expectedJoke)
 
-        whenever(jokeRepositoryMock.fetchJokesBySearchAsync(textToSearch))
+        whenever(jokeRepositoryMock.getRandomJokeAsync(category))
             .thenReturn(CompletableDeferred(expectedResponse))
 
         // ACT
-        viewModel.fetchJokesBySearch(textToSearch)
+        viewModel.getRandomJoke(category)
 
         // ASSERT
         inOrder(commandMock, viewStateObserverMock) {
@@ -349,65 +316,38 @@ class JokeViewModelTest {
 
             verify(commandMock)
                 .postValue(
-                    JokeViewModel.Command.ShowJokeList(expectedJokeResponse.result)
+                    JokeViewModel.Command.ShowJokeCard(expectedJoke)
                 )
         }
     }
 
     @Test
-    fun `Fetch fact list by text search, when no facts are found, then show empty state message`() {
-
-        // ARRANGE
-
-        // ARRANGE
-        val expectedJokeResponse = JokeResponse(
-            2,
-            emptyList()
-        )
-        val textToSearch = "text"
-
-        val expectedResponse = Response.success(expectedJokeResponse)
-
-        whenever(jokeRepositoryMock.fetchJokesBySearchAsync(textToSearch))
-            .thenReturn(CompletableDeferred(expectedResponse))
-
-        // ACT
-        viewModel.fetchJokesBySearch(textToSearch)
-
-        // ASSERT
-        verify(commandMock)
-            .postValue(
-                JokeViewModel.Command.ShowEmptyList
-            )
-    }
-
-    @Test
-    fun `Fetch fact list by text search, when fetching facts from repository fails, then hide loading animation`() {
+    fun `Fetch random fact, when fetching fact from repository fails, then hide loading animation`() {
 
         // ARRANGE
         val errorCode = 500
-        val textToSearch = "text"
+        val category = null
 
         val expectedJsonError = JsonObject().apply {
             addProperty("status", "")
             addProperty("message", "")
         }
 
-        val expectedResponse = Response.error<JokeResponse>(
+        val expectedResponse = Response.error<Joke>(
             errorCode,
             Gson().toJson(expectedJsonError).toResponseBody()
         )
-        whenever(jokeRepositoryMock.fetchJokesBySearchAsync(textToSearch))
+        whenever(jokeRepositoryMock.getRandomJokeAsync(category))
             .thenReturn(CompletableDeferred(expectedResponse))
 
-        *//* this is needed in order to clear the initial notification
-         * that this observer receives with `isFetchingJoke` equals to `false`
-         * that happens when the `JokeViewModel` is first created
-         *//*
+        /* this is needed in order to clear the initial notification
+        * that this observer receives with `isFetchingJoke` equals to `false`
+        * that happens when the `JokeViewModel` is first created
+        */
         clearInvocations(viewStateObserverMock)
 
         // ACT
-        viewModel.fetchJokesBySearch(textToSearch)
+        viewModel.getRandomJoke(category)
 
         // ASSERT
         verify(viewStateObserverMock)
@@ -417,28 +357,28 @@ class JokeViewModelTest {
     }
 
     @Test
-    fun `Fetch fact list by text search, when fetching facts from repository fails, then show fetch error message`() {
+    fun `Fetch random fact, when fetching fact from repository fails, then show fetch error message`() {
 
         // ARRANGE
         val errorCode = 500
         val errorMessage = "custom message"
-        val textToSearch = "text"
+        val category = null
 
         val expectedJsonError = JsonObject().apply {
             addProperty("status", "")
             addProperty("message", errorMessage)
         }
 
-        val expectedResponse = Response.error<JokeResponse>(
+        val expectedResponse = Response.error<Joke>(
             errorCode,
             Gson().toJson(expectedJsonError).toResponseBody()
         )
 
-        whenever(jokeRepositoryMock.fetchJokesBySearchAsync(textToSearch))
+        whenever(jokeRepositoryMock.getRandomJokeAsync(category))
             .thenReturn(CompletableDeferred(expectedResponse))
 
         // ACT
-        viewModel.fetchJokesBySearch(textToSearch)
+        viewModel.getRandomJoke(category)
 
         // ASSERT
         verify(commandMock)
@@ -448,17 +388,17 @@ class JokeViewModelTest {
     }
 
     @Test
-    fun `Fetch fact list by text search, when an exception is thrown from repository, then show fetch error message and hide loading animation`() {
+    fun `Fetch random fact, when an exception is thrown from repository, then show fetch error message and hide loading animation`() {
 
         // ARRANGE
-        val textToSearch = "text"
+        val category = null
 
-        whenever(jokeRepositoryMock.fetchJokesBySearchAsync(textToSearch))
+        whenever(jokeRepositoryMock.getRandomJokeAsync(category))
             .thenAnswer { throw Throwable() }
         clearInvocations(viewStateObserverMock)
 
         // ACT
-        viewModel.fetchJokesBySearch(textToSearch)
+        viewModel.getRandomJoke(category)
 
         // ASSERT
         verify(commandMock)
@@ -469,5 +409,5 @@ class JokeViewModelTest {
             .onChanged(
                 JokeViewModel.ViewState(isFetchingJoke = false)
             )
-    }*/
+    }
 }
