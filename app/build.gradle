@@ -70,7 +70,11 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.github.mancj:MaterialSearchBar:0.8.5'
 
+    // Mockito
+    implementation 'org.mockito:mockito-core:3.3.0'
+
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.4.31'
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
 }
