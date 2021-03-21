@@ -6,8 +6,6 @@ import br.com.chucknorris.global.command.CommandProvider
 import br.com.chucknorris.global.command.GenericCommand
 import br.com.chucknorris.global.events.SingleLiveEvent
 import br.com.chucknorris.service.contract.JokeRepository
-import br.com.chucknorris.service.model.Joke
-import br.com.chucknorris.service.model.JokeResponse
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.nhaarman.mockitokotlin2.*
@@ -19,7 +17,7 @@ import org.junit.Rule
 import org.junit.Test
 import retrofit2.Response
 
-class JokeListViewModelTest {
+class JokeViewModelTest {
     @JvmField
     @Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -27,10 +25,10 @@ class JokeListViewModelTest {
     private lateinit var jokeRepositoryMock: JokeRepository
     private lateinit var commandProviderMock: CommandProvider
 
-    private lateinit var viewStateObserverMock: Observer<JokeListViewModel.ViewState>
+    private lateinit var viewStateObserverMock: Observer<JokeViewModel.ViewState>
     private lateinit var commandMock: SingleLiveEvent<GenericCommand>
 
-    private lateinit var viewModel: JokeListViewModel
+    private lateinit var viewModel: JokeViewModel
 
     @Before
     fun setUp() {
@@ -43,7 +41,7 @@ class JokeListViewModelTest {
         whenever(commandProviderMock.getCommand())
             .thenReturn(commandMock)
 
-        viewModel = JokeListViewModel(
+        viewModel = JokeViewModel(
             jokeRepositoryMock,
             Dispatchers.Unconfined,
             commandProviderMock
@@ -52,6 +50,188 @@ class JokeListViewModelTest {
         viewModel.viewState.observeForever(viewStateObserverMock)
     }
 
+    @Test
+    fun `Fetch category list, when fetching categories from repository happens successfully, then update category list`() {
+
+        // ARRANGE
+        val expectedList = listOf("animal", "career", "celebrity", "dev")
+
+        val expectedResponse = Response.success(expectedList)
+
+        whenever(jokeRepositoryMock.fetchCategoriesAsync())
+            .thenReturn(CompletableDeferred(expectedResponse))
+
+        // ACT
+        viewModel.fetchCategories()
+
+        // ASSERT
+        verify(commandMock)
+            .postValue(
+                JokeViewModel.Command.ShowCategoryList(expectedList)
+            )
+    }
+
+    @Test
+    fun `Fetch category list, when fetching categories from repository happens successfully, then show loading animation before displaying categories`() {
+
+        // ARRANGE
+        val expectedList = listOf("animal", "career", "celebrity", "dev")
+
+        val expectedResponse = Response.success(expectedList)
+
+        whenever(jokeRepositoryMock.fetchCategoriesAsync())
+            .thenReturn(CompletableDeferred(expectedResponse))
+
+        // ACT
+        viewModel.fetchCategories()
+
+        // ASSERT
+        inOrder(commandMock, viewStateObserverMock) {
+            verify(viewStateObserverMock)
+                .onChanged(
+                    JokeViewModel.ViewState(isFetchingCategories = true)
+                )
+
+            verify(commandMock)
+                .postValue(
+                    JokeViewModel.Command.ShowCategoryList(expectedList)
+                )
+        }
+    }
+
+    @Test
+    fun `Fetch category list, when fetching categories from repository happens successfully, then hide loading animation after displaying categories`() {
+
+        // ARRANGE
+        val expectedList = listOf("animal", "career", "celebrity", "dev")
+
+        val expectedResponse = Response.success(expectedList)
+
+        whenever(jokeRepositoryMock.fetchCategoriesAsync())
+            .thenReturn(CompletableDeferred(expectedResponse))
+
+        // ACT
+        viewModel.fetchCategories()
+
+        // ASSERT
+        inOrder(commandMock, viewStateObserverMock) {
+            verify(viewStateObserverMock)
+                .onChanged(
+                    JokeViewModel.ViewState(isFetchingCategories = false)
+                )
+
+            verify(commandMock)
+                .postValue(
+                    JokeViewModel.Command.ShowCategoryList(expectedList)
+                )
+        }
+    }
+
+    @Test
+    fun `Fetch category list, when no categories are found, then show empty state message`() {
+
+        // ARRANGE
+        val expectedList = emptyList<String>()
+
+        val expectedResponse = Response.success(expectedList)
+
+        whenever(jokeRepositoryMock.fetchCategoriesAsync())
+            .thenReturn(CompletableDeferred(expectedResponse))
+
+        // ACT
+        viewModel.fetchCategories()
+
+        // ASSERT
+        verify(commandMock)
+            .postValue(
+                JokeViewModel.Command.ShowCategoryList(expectedList)
+            )
+    }
+
+
+    @Test
+    fun `Fetch category list, when fetching categories from repository fails, then hide loading animation`() {
+
+        // ARRANGE
+        val errorCode = 500
+
+        val expectedJsonError = JsonObject().apply {
+            addProperty("status", "")
+            addProperty("message", "")
+        }
+
+        val expectedResponse = Response.error<List<String>>(
+            errorCode,
+            Gson().toJson(expectedJsonError).toResponseBody()
+        )
+        whenever(jokeRepositoryMock.fetchCategoriesAsync())
+            .thenReturn(CompletableDeferred(expectedResponse))
+
+        /* this is needed in order to clear the initial notification
+         * that this observer receives with `isFetchingJoke` equals to `false`
+         * that happens when the `JokeViewModel` is first created
+         */
+        clearInvocations(viewStateObserverMock)
+
+        // ACT
+        viewModel.fetchCategories()
+
+        // ASSERT
+        verify(viewStateObserverMock)
+            .onChanged(
+                JokeViewModel.ViewState(isFetchingCategories = false)
+            )
+    }
+
+    @Test
+    fun `Fetch category list, when an exception is thrown from repository, then show fetch error message and hide loading animation`() {
+
+        // ARRANGE
+
+        whenever(jokeRepositoryMock.fetchCategoriesAsync())
+            .thenAnswer { throw Throwable() }
+        clearInvocations(viewStateObserverMock)
+
+        // ACT
+        viewModel.fetchCategories()
+
+        // ASSERT
+        verify(viewStateObserverMock)
+            .onChanged(
+                JokeViewModel.ViewState(isFetchingCategories = false)
+            )
+    }
+
+    /*@Test
+    fun `Fetch category list, when fetching categories from repository fails, then show fetch error message`() {
+
+        // ARRANGE
+        val errorCode = 500
+        val errorMessage = "custom message"
+
+        val expectedJsonError = JsonObject().apply {
+            addProperty("status", "")
+            addProperty("message", errorMessage)
+        }
+
+        val expectedResponse = Response.error<List<String>>(
+            errorCode,
+            Gson().toJson(expectedJsonError).toResponseBody()
+        )
+        whenever(jokeRepositoryMock.fetchCategoriesAsync())
+            .thenReturn(CompletableDeferred(expectedResponse))
+
+        // ACT
+        viewModel.fetchCategories()
+
+        // ASSERT
+        verify(commandMock)
+            .postValue(
+                JokeViewModel.Command.ShowGenericErrorMessage
+            )
+    }*/
+
+    /*
     @Test
     fun `Fetch fact list by text search, when fetching facts from repository happens successfully, then update fact list`() {
 
@@ -84,7 +264,7 @@ class JokeListViewModelTest {
         // ASSERT
         verify(commandMock)
             .postValue(
-                JokeListViewModel.Command.ShowJokeList(expectedJokeResponse.result)
+                JokeViewModel.Command.ShowJokeList(expectedJokeResponse.result)
             )
     }
 
@@ -121,12 +301,12 @@ class JokeListViewModelTest {
         inOrder(commandMock, viewStateObserverMock) {
             verify(viewStateObserverMock)
                 .onChanged(
-                    JokeListViewModel.ViewState(isFetchingJoke = true)
+                    JokeViewModel.ViewState(isFetchingJoke = true)
                 )
 
             verify(commandMock)
                 .postValue(
-                    JokeListViewModel.Command.ShowJokeList(expectedJokeResponse.result)
+                    JokeViewModel.Command.ShowJokeList(expectedJokeResponse.result)
                 )
         }
     }
@@ -164,18 +344,20 @@ class JokeListViewModelTest {
         inOrder(commandMock, viewStateObserverMock) {
             verify(viewStateObserverMock)
                 .onChanged(
-                    JokeListViewModel.ViewState(isFetchingJoke = false)
+                    JokeViewModel.ViewState(isFetchingJoke = false)
                 )
 
             verify(commandMock)
                 .postValue(
-                    JokeListViewModel.Command.ShowJokeList(expectedJokeResponse.result)
+                    JokeViewModel.Command.ShowJokeList(expectedJokeResponse.result)
                 )
         }
     }
 
     @Test
     fun `Fetch fact list by text search, when no facts are found, then show empty state message`() {
+
+        // ARRANGE
 
         // ARRANGE
         val expectedJokeResponse = JokeResponse(
@@ -195,7 +377,7 @@ class JokeListViewModelTest {
         // ASSERT
         verify(commandMock)
             .postValue(
-                JokeListViewModel.Command.ShowEmptyList
+                JokeViewModel.Command.ShowEmptyList
             )
     }
 
@@ -218,10 +400,10 @@ class JokeListViewModelTest {
         whenever(jokeRepositoryMock.fetchJokesBySearchAsync(textToSearch))
             .thenReturn(CompletableDeferred(expectedResponse))
 
-        /* this is needed in order to clear the initial notification
+        *//* this is needed in order to clear the initial notification
          * that this observer receives with `isFetchingJoke` equals to `false`
-         * that happens when the `JokeListViewModel` is first created
-         */
+         * that happens when the `JokeViewModel` is first created
+         *//*
         clearInvocations(viewStateObserverMock)
 
         // ACT
@@ -230,7 +412,7 @@ class JokeListViewModelTest {
         // ASSERT
         verify(viewStateObserverMock)
             .onChanged(
-                JokeListViewModel.ViewState(isFetchingJoke = false)
+                JokeViewModel.ViewState(isFetchingJoke = false)
             )
     }
 
@@ -261,7 +443,7 @@ class JokeListViewModelTest {
         // ASSERT
         verify(commandMock)
             .postValue(
-                JokeListViewModel.Command.ShowGenericErrorMessage
+                JokeViewModel.Command.ShowGenericErrorMessage
             )
     }
 
@@ -281,11 +463,11 @@ class JokeListViewModelTest {
         // ASSERT
         verify(commandMock)
             .postValue(
-                JokeListViewModel.Command.ShowGenericErrorMessage
+                JokeViewModel.Command.ShowGenericErrorMessage
             )
         verify(viewStateObserverMock)
             .onChanged(
-                JokeListViewModel.ViewState(isFetchingJoke = false)
+                JokeViewModel.ViewState(isFetchingJoke = false)
             )
-    }
+    }*/
 }
