@@ -13,7 +13,7 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
 
-class KeyManagementDataRepositoryTest {
+class JokeApiRepositoryTest {
 
     private lateinit var jokeApiClientMock: JokeApiClient
     private lateinit var jokeRepositoryMock: JokeRepository
