@@ -23,8 +23,8 @@ For this app, the API used was: https://api.chucknorris.io.
 *chucknorris.io* is a free JSON API for hand curated Chuck Norris facts.\
 Chuck Norris facts are satirical factoids about martial artist and actor Chuck Norris that have become an Internet phenomenon and as a result have become widespread in popular culture. The 'facts' are normally absurd hyperbolic claims about Norris' toughness, attitude, virility, sophistication, and masculinity.
 
-# Functionalities
-The app has two screens.
+# Features
+The app has two screens to present "facts" about Chuck Norris.
 
 ## First Screen: Random Fact
 In the first screen, it's possible read a random fact without filter. There is a button to read the next fact.\
