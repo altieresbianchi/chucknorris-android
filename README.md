@@ -1,5 +1,6 @@
 # Chuck Norris - Android
-Chuck Norris Facts
+Chuck Norris Facts is an app created for the purpose of presenting knowledge in building Android applications with the Kotlin language.\
+There is no commercial goal in this development.
 
 # Architecture:
 MVVM - Model View ViewModel
@@ -7,7 +8,6 @@ MVVM - Model View ViewModel
 ![MVVM Architecture](http://www.phaneronsoft.com.br/wp-content/uploads/2021/03/MVVM_Architecture.png?raw=true "Architecture MVVM")
 
 # Applied Techniques
-Chuck Norris Facts is an app created for the purpose of presenting knowledge in building Android applications with the Kotlin language. There is no commercial goal in this development.
 In this app, some development techniques were used as described below:
 - Language: Kotlin with Coroutines
 - Architecture: MVVM
